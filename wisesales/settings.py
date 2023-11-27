@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
 from pathlib import Path
 from wisesales.config.environment import env
 
@@ -21,10 +21,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!sf1qt2)lif4htzhek(zh*dj28u-hamx==x_-=z68d%&bgo(g&"
+SECRET_KEY = env.SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = env.DEBUG
 
 ALLOWED_HOSTS = []
 
@@ -41,6 +41,33 @@ INSTALLED_APPS = [
     "rest_framework",
     "drf_yasg",
 ]
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "file": {
+            "class": "logging.handlers.RotatingFileHandler",
+            "filename": os.path.join(BASE_DIR, "logs/request.log"),
+            "maxBytes": 20485760,  # 20 MB
+            "backupCount": 5,
+            "encoding": "utf-8",
+            "formatter": "verbose",
+        },
+    },
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["file"],
+            "level": "DEBUG",
+            "propagate": True,
+        },
+    },
+}
 
 
 MIDDLEWARE = [

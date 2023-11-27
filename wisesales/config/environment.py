@@ -12,6 +12,9 @@ class Envs(BaseSettings):
     DB_HOST: str
     DB_PORT: str
 
+    SECRET_KEY: str
+    DEBUG: bool
+
     class Config:
         env_file = os.path.join(BASE_DIR, "..", ".env")
 
