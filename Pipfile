@@ -13,6 +13,7 @@ drf-yasg = "*"
 pillow = "*"
 boto3 = "*"
 django-storages = "*"
+django-log-viewer = "*"
 
 [dev-packages]
 

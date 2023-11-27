@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 import os
 from pathlib import Path
 from config.environment import env
+from datetime import datetime
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "drf_yasg",
     "user",
     "rest_framework.authtoken",
+    "log_viewer",
 ]
 
 REST_FRAMEWORK = {
@@ -65,17 +67,19 @@ LOGGING = {
     "disable_existing_loggers": False,
     "handlers": {
         "file": {
-            "class": "logging.handlers.RotatingFileHandler",
-            "filename": os.path.join(BASE_DIR, "logs/request.log"),
-            "maxBytes": 20485760,  # 20 MB
-            "backupCount": 5,
+            "class": "logging.handlers.TimedRotatingFileHandler",
+            "filename": os.path.join(
+                BASE_DIR, f"logs/request_{datetime.now().strftime('%Y-%m-%d')}.log"
+            ),
+            "when": "midnight",  # Roll over at midnight
+            "backupCount": 7,
             "encoding": "utf-8",
             "formatter": "verbose",
         },
     },
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)",
+            "format": "[%(levelname)s] %(asctime)s %(message)s (%(filename)s:%(lineno)s)",
         },
     },
     "loggers": {
@@ -86,6 +90,23 @@ LOGGING = {
         },
     },
 }
+
+LOG_VIEWER_FILES = ["logfile1", "logfile2", ...]
+LOG_VIEWER_FILES_PATTERN = "*.log*"
+LOG_VIEWER_FILES_DIR = os.path.join(BASE_DIR, "logs")
+LOG_VIEWER_PAGE_LENGTH = 25  # total log lines per-page
+LOG_VIEWER_MAX_READ_LINES = 1000  # total log lines will be read
+LOG_VIEWER_FILE_LIST_MAX_ITEMS_PER_PAGE = (
+    25  # Max log files loaded in Datatable per page
+)
+LOG_VIEWER_PATTERNS = ["[INFO]", "[DEBUG]", "[WARNING]", "[ERROR]", "[CRITICAL]"]
+LOG_VIEWER_EXCLUDE_TEXT_PATTERN = (
+    None  # String regex expression to exclude the log from line
+)
+
+# Optionally you can set the next variables in order to customize the admin:
+LOG_VIEWER_FILE_LIST_TITLE = "Custom title"
+LOG_VIEWER_FILE_LIST_STYLES = "/static/css/my-custom.css"
 
 
 MIDDLEWARE = [

@@ -1,6 +1,6 @@
 from rest_framework.exceptions import ValidationError
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 
 # Create your views here.
 from rest_framework.views import APIView
@@ -15,6 +15,8 @@ from mixins.logging_mixin import LoggingMixin
 
 # serilaizer
 from user.serializers.user import UserRegisterSerializer, UserLoginSerializer
+
+User = get_user_model()
 
 
 class UserLoginAPIView(LoggingMixin, APIView):
