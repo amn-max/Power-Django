@@ -16,7 +16,7 @@ class Envs(BaseSettings):
     DEBUG: bool
 
     class Config:
-        env_file = os.path.join(BASE_DIR, "..", ".env")
+        env_file = os.path.join(BASE_DIR, ".env")
 
 
 env = Envs()
