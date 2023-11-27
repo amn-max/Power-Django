@@ -50,6 +50,9 @@ REST_FRAMEWORK = {
     ],
 }
 
+AUTH_USER_MODEL = "user.User"
+swappable = "AUTH_USER_MODEL"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

@@ -10,6 +10,7 @@ pydantic = "*"
 pydantic-settings = "*"
 psycopg2 = "*"
 drf-yasg = "*"
+pillow = "*"
 
 [dev-packages]
 
