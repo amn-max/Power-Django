@@ -11,6 +11,8 @@ pydantic-settings = "*"
 psycopg2 = "*"
 drf-yasg = "*"
 pillow = "*"
+boto3 = "*"
+django-storages = "*"
 
 [dev-packages]
 
