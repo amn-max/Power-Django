@@ -8,10 +8,11 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
-from datetime import datetime
+from django.utils import timezone
 from django.http import HttpRequest
 from django.core.files.storage import default_storage
 from mixins.logging_mixin import LoggingMixin
+from rest_framework_simplejwt.tokens import RefreshToken
 
 # serilaizer
 from user.serializers.user import UserRegisterSerializer, UserLoginSerializer
@@ -26,14 +27,16 @@ class UserLoginAPIView(LoggingMixin, APIView):
             response = {"username": {"detail": "User Doesnot exist!"}}
             if User.objects.filter(username=request.data["username"]).exists():
                 user = User.objects.get(username=request.data["username"])
-                user.last_login = datetime.now()
+                user.last_login = timezone.now()
                 user.save(update_fields=["last_login"])
-                token, created = Token.objects.get_or_create(user=user)
+                refresh = str(RefreshToken.for_user(user))
+                access = str(RefreshToken.for_user(user).access_token)
                 response = {
                     "success": True,
                     "username": user.username,
                     "email": user.email,
-                    "token": token.key,
+                    "refresh_token": refresh,
+                    "access_token": access,
                 }
                 return Response(response, status=status.HTTP_200_OK)
             return Response(response, status=status.HTTP_400_BAD_REQUEST)
@@ -60,11 +63,15 @@ class UserLogoutAPIView(LoggingMixin, APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request: HttpRequest, *args):
-        token = Token.objects.get(user=request.user)
-        token.delete()
-        return Response(
-            {"success": True, "detail": "Logged out!"}, status=status.HTTP_200_OK
-        )
+        try:
+            refresh_token = request.data["refresh_token"]
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            return Response(
+                {"success": True, "detail": "Logged out!"}, status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserProfilePictureUploadAPIView(LoggingMixin, APIView):

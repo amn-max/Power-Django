@@ -14,6 +14,7 @@ pillow = "*"
 boto3 = "*"
 django-storages = "*"
 django-log-viewer = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
