@@ -16,12 +16,21 @@ class Envs(BaseSettings):
     # ENV
     SECRET_KEY: str
     DEBUG: bool
+    PORT: int
 
     # AWS
     AWS_ACCESS_KEY_ID: str
     AWS_SECRET_ACCESS_KEY: str
     AWS_STORAGE_BUCKET_NAME: str
     AWS_S3_REGION_NAME: str
+
+    # Redis
+    REDIS_HOST: str
+    REDIS_PORT: int
+
+    # pgadmin
+    PGADMIN_DEFAULT_EMAIL: str
+    PGADMIN_DEFAULT_PASSWORD: str
 
     class Config:
         env_file = os.path.join(BASE_DIR, ".env")

@@ -1,0 +1,114 @@
+version: "3"
+
+services:
+  # PostgreSQL
+  db:
+    image: postgres:15.5
+    hostname: ${DB_HOST}
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "${DB_PORT}:${DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    env_file:
+      - .env
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - "8888:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: user-name@domain-name.com
+      PGADMIN_DEFAULT_PASSWORD: strong-password
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+  # Redis
+  redis:
+    restart: unless-stopped
+    image: redis:7.2.3
+    hostname: redis
+    ports:
+      - "${REDIS_PORT}:${REDIS_PORT}"
+    expose:
+      - "${REDIS_PORT}"
+
+  # Django
+  web:
+    image: api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: web
+    # From documentation:
+    # However, Compose does not wait until a container is “ready”
+    # (whatever that means for your particular application) - only until it’s
+    # running. There’s a good reason for this.
+    command: ["./bin/entrypoint.sh"]
+    volumes:
+      # Mount root to app
+      - .:/app
+      # Mount entrypoint.sh to run in container
+      - ./bin/entrypoint.sh:/app/bin/entrypoint.sh
+      - static:/app/static
+    ports:
+      - "${PORT}:${PORT}"
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+        - action: rebuild
+          path: Pipfile
+    depends_on:
+      - db
+    env_file:
+      - .env
+
+  # Nginx
+  nginx:
+    image: nginx:1.19.0-alpine
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    volumes:
+      - static:/static
+    ports:
+      - "80:80"
+    
+    depends_on:
+      - web
+
+  # Celery
+  worker:
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: celery -A wisesales.celery worker -Q default -n default@%h --loglevel=info --concurrency 1 -E
+    volumes:
+      - .:/app
+    depends_on:
+      - web
+    env_file:
+      - .env
+
+volumes:
+  postgres-data:
+  pgadmin-data:
+  static:
+
+networks:
+  haproxy_net:
+    external: true
+

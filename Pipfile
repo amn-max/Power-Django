@@ -15,6 +15,10 @@ boto3 = "*"
 django-storages = "*"
 django-log-viewer = "*"
 djangorestframework-simplejwt = "*"
+django-celery-results = "*"
+celery = {extras = ["redis"], version = "*"}
+redis = "*"
+gunicorn = "*"
 
 [dev-packages]
 

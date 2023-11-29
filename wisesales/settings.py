@@ -146,12 +146,18 @@ TEMPLATES = [
     },
 ]
 
+CELERY_BROKER_URL = "redis://{host}:{port}/0".format(
+    host=env.REDIS_HOST, port=env.REDIS_PORT
+)
+CELERY_RESULT_BACKEND = "redis://{host}:{port}/0".format(
+    host=env.REDIS_HOST, port=env.REDIS_PORT
+)
+
 WSGI_APPLICATION = "wisesales.wsgi.application"
 
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
@@ -199,6 +205,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = "static/"
+
+STATIC_ROOT = "static/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
