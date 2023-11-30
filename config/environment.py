@@ -4,7 +4,6 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
 class Envs(BaseSettings):
     # DB
     DB_NAME: str

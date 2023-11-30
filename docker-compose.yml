@@ -5,6 +5,7 @@ services:
   db:
     image: postgres:15.5
     hostname: ${DB_HOST}
+    restart: unless-stopped
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -24,7 +25,7 @@ services:
 
   pgadmin:
     image: dpage/pgadmin4
-    restart: always
+    restart: unless-stopped
     ports:
       - "8888:80"
     environment:
@@ -46,6 +47,7 @@ services:
   # Django
   web:
     image: api
+    restart: unless-stopped
     build:
       context: .
       dockerfile: Dockerfile
@@ -71,6 +73,7 @@ services:
   # Nginx
   nginx:
     image: nginx:1.19.0-alpine
+    restart: unless-stopped
     build:
       context: ./nginx
       dockerfile: Dockerfile
