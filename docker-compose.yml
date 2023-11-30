@@ -88,7 +88,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: celery -A wisesales.celery worker -Q default -n default@%h --loglevel=info --concurrency 1 -E
+    command: celery -A power.celery worker -Q default -n default@%h --loglevel=info --concurrency 1 -E
     volumes:
       - .:/app
     depends_on:
