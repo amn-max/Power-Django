@@ -46,7 +46,7 @@ services:
 
   # Django
   web:
-    image: api
+    image: power-api
     restart: unless-stopped
     build:
       context: .
@@ -62,7 +62,6 @@ services:
       - .:/app
       # Mount entrypoint.sh to run in container
       - ./bin/entrypoint.sh:/app/bin/entrypoint.sh
-      - static:/app/static
     ports:
       - "${PORT}:${PORT}"
     depends_on:
@@ -88,6 +87,7 @@ services:
   # Celery
   worker:
     restart: unless-stopped
+    image: power-celery
     build:
       context: .
       dockerfile: Dockerfile
