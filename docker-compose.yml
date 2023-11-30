@@ -63,13 +63,6 @@ services:
       - static:/app/static
     ports:
       - "${PORT}:${PORT}"
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-        - action: rebuild
-          path: Pipfile
     depends_on:
       - db
     env_file:
