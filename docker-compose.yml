@@ -101,7 +101,7 @@ services:
       - .env
 
   flower:
-    image: mher/flower:0.9.7
+    image: mher/flower:2.0
     command: ['flower', '--broker=redis://redis:6379', '--port=5555']
     expose:
       - 5555
