@@ -41,17 +41,38 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "rest_framework",
+    "rest_framework.authtoken",
+    "dj_rest_auth",
     "drf_yasg",
     "user",
     "log_viewer",
+    "django.contrib.sites",
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
+    "dj_rest_auth.registration",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    # "allauth.socialaccount.providers.facebook",
+    # "allauth.socialaccount.providers.twitter",
 ]
+
+SITE_ID = 1
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ],
+}
+REST_AUTH = {
+    "USE_JWT": True,
+    "JWT_AUTH_COOKIE": "power-token",
+    "JWT_AUTH_REFRESH_COOKIE": "power-refresh-token",
+    "JWT_AUTH_HTTPONLY": False,
+}
+
+REST_AUTH_REGISTER_SERIALIZERS = {
+    "REGISTER_SERIALIZER": "user.serializers.user.UserRegisterSerializer",
 }
 
 SIMPLE_JWT = {
@@ -117,6 +138,19 @@ LOG_VIEWER_EXCLUDE_TEXT_PATTERN = (
 LOG_VIEWER_FILE_LIST_TITLE = "Custom title"
 LOG_VIEWER_FILE_LIST_STYLES = "/static/css/my-custom.css"
 
+ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+LOGIN_REDIRECT_URL = "/"
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp.gmail.com"
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "ayushmnaik@gmail.com"
+EMAIL_HOST_PASSWORD = "qahmblsnmzkrtugg"
+EMAIL_USE_TLS = True
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -126,6 +160,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "power.urls"
@@ -141,9 +176,17 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "django.template.context_processors.request",
             ],
         },
     },
+]
+
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by email
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 CELERY_BROKER_URL = "redis://{host}:{port}/0".format(

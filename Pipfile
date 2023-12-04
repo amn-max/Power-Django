@@ -19,6 +19,7 @@ django-celery-results = "*"
 celery = {extras = ["redis"], version = "*"}
 redis = "*"
 gunicorn = "*"
+dj-rest-auth = {extras = ["with_social"], version = "*"}
 
 [dev-packages]
 

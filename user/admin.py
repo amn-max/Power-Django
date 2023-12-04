@@ -19,7 +19,10 @@ class UserAdmin(UserAdmin):
 
     fieldsets = (
         (None, {"fields": ("email", "username", "password")}),
-        ("Personal info", {"fields": ("date_of_birth", "profile_picture")}),
+        (
+            "Personal info",
+            {"fields": ("first_name", "last_name", "date_of_birth", "profile_picture")},
+        ),
         (
             "Permissions",
             {
@@ -44,3 +47,8 @@ class UserAdmin(UserAdmin):
             },
         ),
     )
+
+
+from rest_framework.authtoken.models import TokenProxy
+
+admin.site.unregister(TokenProxy)

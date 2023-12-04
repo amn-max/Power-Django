@@ -1,30 +1,16 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from rest_framework.exceptions import ValidationError
-from rest_framework import status
-from rest_framework.authtoken.models import Token
+
+# all auth
+from dj_rest_auth.registration.serializers import RegisterSerializer
+
 
 User = get_user_model()
 
 
-class UserLoginSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(read_only=True)
-    username = serializers.CharField(read_only=True)
-    password = serializers.CharField(write_only=True)
-
-    class Meta:
-        model = User
-        fields = ["id", "username", "password"]
-
-
-class UserRegisterSerializer(serializers.ModelSerializer):
-    id = serializers.PrimaryKeyRelatedField(read_only=True)
-    username = serializers.CharField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    email = serializers.EmailField()
-    password = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+class UserRegisterSerializer(RegisterSerializer):
+    first_name = serializers.CharField(required=False)
+    last_name = serializers.CharField(required=False)
 
     class Meta:
         model = User
@@ -39,26 +25,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
-    def validate_username(self, username):
-        if User.objects.filter(username=username).exists():
-            detail = {"detail": "User Already exist!"}
-            raise ValidationError(detail=detail)
-        return username
-
-    def validate(self, instance):
-        if instance["password"] != instance["password2"]:
-            raise ValidationError({"message": "Both password must match"})
-
-        if User.objects.filter(email=instance["email"]).exists():
-            raise ValidationError({"message": "Email already taken!"})
-
-        return instance
-
-    def create(self, validated_data):
-        passowrd = validated_data.pop("password")
-        passowrd2 = validated_data.pop("password2")
-        user = User.objects.create(**validated_data)
-        user.set_password(passowrd)
-        user.save()
-        Token.objects.create(user=user)
-        return user
+    def custom_signup(self, request, user):
+        user.first_name = self.validated_data.get("first_name", "")
+        user.last_name = self.validated_data.get("last_name", "")
+        user.save(update_fields=["first_name", "last_name"])

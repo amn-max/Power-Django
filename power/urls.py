@@ -45,5 +45,5 @@ urlpatterns = [
     # API URLs
     path("admin/", admin.site.urls),
     path("logs/", include("log_viewer.urls")),
-    path("account/", include("user.urls")),
+    path("user/", include("user.urls")),
 ]

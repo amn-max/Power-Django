@@ -104,7 +104,4 @@ volumes:
   pgadmin-data:
   static:
 
-networks:
-  haproxy_net:
-    external: true
 
