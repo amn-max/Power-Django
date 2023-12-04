@@ -4,6 +4,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 class Envs(BaseSettings):
     # DB
     DB_NAME: str
@@ -30,6 +31,10 @@ class Envs(BaseSettings):
     # pgadmin
     PGADMIN_DEFAULT_EMAIL: str
     PGADMIN_DEFAULT_PASSWORD: str
+
+    # email
+    EMAIL_HOST_USER: str
+    EMAIL_HOST_PASSWORD: str
 
     class Config:
         env_file = os.path.join(BASE_DIR, ".env")
