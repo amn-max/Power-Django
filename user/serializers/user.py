@@ -36,6 +36,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             "email",
             "password",
             "password2",
+            "keycloak_id",
         ]
         extra_kwargs = {"password": {"write_only": True}}
 
@@ -60,5 +61,4 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user = User.objects.create(**validated_data)
         user.set_password(passowrd)
         user.save()
-        Token.objects.create(user=user)
         return user

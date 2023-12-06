@@ -23,6 +23,27 @@ services:
     env_file:
       - .env
 
+  keycloak_db:
+    image: postgres:15.5
+    hostname: keycloak_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - keycloak-data:/var/lib/postgresql/data
+    ports:
+      - "5433:${DB_PORT}"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+    env_file:
+      - .env
+
   pgadmin:
     image: dpage/pgadmin4
     restart: unless-stopped
@@ -47,6 +68,7 @@ services:
   # Django
   web:
     image: power-api
+    container_name: power-api
     restart: unless-stopped
     build:
       context: .
@@ -99,12 +121,33 @@ services:
     env_file:
       - .env
 
+  # Auth
+  auth:
+    image: quay.io/keycloak/keycloak:legacy
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak_db
+      DB_DATABASE: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_SCHEMA: public
+      DB_PASSWORD: ${DB_PASSWORD}
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: Password@123
+      # Uncomment the line below if you want to specify JDBC parameters. The parameter below is just an example, and it shouldn't be used in production without knowledge. It is highly recommended that you read the PostgreSQL JDBC driver documentation in order to use it.
+      #JDBC_PARAMS: "ssl=true"
+    ports:
+      - "8080:8080"
+      - "9990:9990"
+    expose:
+      - "8080"
+      - "9990"
+    depends_on:
+      - keycloak_db
+
 volumes:
   postgres-data:
   pgadmin-data:
   static:
+  keycloak-data:
 
-networks:
-  haproxy_net:
-    external: true
 

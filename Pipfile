@@ -19,6 +19,7 @@ django-celery-results = "*"
 celery = {extras = ["redis"], version = "*"}
 redis = "*"
 gunicorn = "*"
+authlib = "*"
 
 [dev-packages]
 

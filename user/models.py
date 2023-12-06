@@ -10,6 +10,7 @@ class User(AbstractUser):
         upload_to="profile_pics/", blank=True, null=True
     )
     is_active = models.BooleanField(default=True)
+    keycloak_id = models.CharField(max_length=1000, blank=True)
 
     def __str__(self):
         return self.email + "," + self.username
